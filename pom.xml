@@ -14,19 +14,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>lumi-repo</id>
-            <url>https://lumi.su</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>com.koshakmine</groupId>
             <artifactId>Lumi</artifactId>
-            <version>1.6.10-SNAPSHOT</version>
-            <scope>provided</scope>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lumi.jar</systemPath>
         </dependency>
     </dependencies>
 
