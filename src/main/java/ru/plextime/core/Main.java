@@ -6,7 +6,9 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.event.EventHandler;
+import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.Listener;
+import cn.nukkit.event.player.PlayerCommandPreprocessEvent;
 import cn.nukkit.event.player.PlayerFormRespondedEvent;
 import cn.nukkit.event.player.PlayerMoveEvent;
 import cn.nukkit.form.element.ElementButton;
@@ -49,22 +51,32 @@ public class Main extends PluginBase implements Listener {
                 }
             }
         }
-        this.getLogger().info("§a[PlexTime] NewPlugin v1.0 (UI MultiWorld) запущен!");
+        this.getLogger().info("§a[PlexTime] NewPlugin v1.2 (UI MultiWorld) запущен!");
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onCommandPreprocess(PlayerCommandPreprocessEvent event) {
+        String msg = event.getMessage().trim();
+        if (msg.equalsIgnoreCase("/mw") || msg.toLowerCase().startsWith("/mw ")) {
+            event.setCancelled(true);
+            Player player = event.getPlayer();
+            if (!player.hasPermission("plextime.owner") && !player.isOp()) {
+                player.sendMessage("§cНет прав.");
+                return;
+            }
+            this.getServer().getScheduler().scheduleDelayedTask(this, () -> openMainMenu(player), 5);
+        }
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (command.getName().equalsIgnoreCase("mw")) {
-            if (!(sender instanceof Player)) {
-                sender.sendMessage("Команда доступна только в игре.");
-                return true;
-            }
+        if (command.getName().equalsIgnoreCase("mw") && sender instanceof Player) {
             Player player = (Player) sender;
             if (!player.hasPermission("plextime.owner") && !player.isOp()) {
                 player.sendMessage("§cНет прав.");
                 return true;
             }
-            openMainMenu(player);
+            this.getServer().getScheduler().scheduleDelayedTask(this, () -> openMainMenu(player), 5);
             return true;
         }
         return false;
