@@ -51,7 +51,7 @@ public class Main extends PluginBase implements Listener {
                 }
             }
         }
-        this.getLogger().info("§a[PlexTime] NewPlugin v1.2 (UI MultiWorld) запущен!");
+        this.getLogger().info("§a[PlexTime] NewPlugin v1.3 (UI MultiWorld) запущен!");
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -64,7 +64,7 @@ public class Main extends PluginBase implements Listener {
                 player.sendMessage("§cНет прав.");
                 return;
             }
-            this.getServer().getScheduler().scheduleDelayedTask(this, () -> openMainMenu(player), 5);
+            openMainMenu(player);
         }
     }
 
@@ -76,7 +76,7 @@ public class Main extends PluginBase implements Listener {
                 player.sendMessage("§cНет прав.");
                 return true;
             }
-            this.getServer().getScheduler().scheduleDelayedTask(this, () -> openMainMenu(player), 5);
+            openMainMenu(player);
             return true;
         }
         return false;
