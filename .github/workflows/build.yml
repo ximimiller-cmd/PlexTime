@@ -10,6 +10,10 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+      - name: Download Lumi Core
+        run: |
+          URL=$(curl -s https://github.com | grep "browser_download_url.*\.jar" | cut -d '"' -f 4 | head -n 1)
+          curl -L "$URL" -o lumi.jar
       - name: Build with Maven
         run: mvn clean package
       - name: Upload JAR
