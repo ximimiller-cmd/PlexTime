@@ -10,7 +10,7 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
       - run: |
-          mkdir -p s/cn/nukkit/{block,command,event/player,form/{element,response,window},level/generator,math,plugin} build/{s,c} target
+          mkdir -p s/cn/nukkit/{block,command,event/player,form/{element,response,window},level/generator,math,plugin,scheduler} build/{s,c} target
           echo 'package cn.nukkit.math; public class Vector3 { public double x,y,z; public Vector3(double x,double y,double z){} }' > s/cn/nukkit/math/Vector3.java
           echo 'package cn.nukkit.level; import cn.nukkit.math.Vector3; public class Position extends Vector3 { public Position(){super(0,0,0);} }' > s/cn/nukkit/level/Position.java
           echo 'package cn.nukkit.level; public class Location extends Position {}' > s/cn/nukkit/level/Location.java
@@ -25,7 +25,9 @@ jobs:
           echo 'package cn.nukkit.command; public class Command { public String getName(){return "";} }' > s/cn/nukkit/command/Command.java
           echo 'package cn.nukkit.command; public interface CommandSender { void sendMessage(String m); }' > s/cn/nukkit/command/CommandSender.java
           echo 'package cn.nukkit.event; public interface Listener {}' > s/cn/nukkit/event/Listener.java
-          echo 'package cn.nukkit.event; import java.lang.annotation.*; @Retention(RetentionPolicy.RUNTIME) @Target(ElementType.METHOD) public @interface EventHandler {}' > s/cn/nukkit/event/EventHandler.java
+          echo 'package cn.nukkit.event; public enum EventPriority { LOWEST, LOW, NORMAL, HIGH, HIGHEST, MONITOR }' > s/cn/nukkit/event/EventPriority.java
+          echo 'package cn.nukkit.event; import java.lang.annotation.*; @Retention(RetentionPolicy.RUNTIME) @Target(ElementType.METHOD) public @interface EventHandler { EventPriority priority() default EventPriority.NORMAL; }' > s/cn/nukkit/event/EventHandler.java
+          echo 'package cn.nukkit.event.player; import cn.nukkit.Player; public class PlayerCommandPreprocessEvent { public String getMessage(){return "";} public void setCancelled(boolean c){} public Player getPlayer(){return null;} }' > s/cn/nukkit/event/player/PlayerCommandPreprocessEvent.java
           echo 'package cn.nukkit.form.element; public abstract class Element {}' > s/cn/nukkit/form/element/Element.java
           echo 'package cn.nukkit.form.element; public class ElementButton { public ElementButton(String t){} public String getText(){return "";} }' > s/cn/nukkit/form/element/ElementButton.java
           echo 'package cn.nukkit.form.element; import java.util.List; public class ElementDropdown extends Element { public ElementDropdown(String t,List<String> o){} }' > s/cn/nukkit/form/element/ElementDropdown.java
@@ -41,8 +43,10 @@ jobs:
           echo 'package cn.nukkit.event.player; import cn.nukkit.Player; public class PlayerMoveEvent { public Player getPlayer(){return null;} }' > s/cn/nukkit/event/player/PlayerMoveEvent.java
           echo 'package cn.nukkit.plugin; import cn.nukkit.event.Listener; public class PluginManager { public void registerEvents(Listener l,PluginBase p){} }' > s/cn/nukkit/plugin/PluginManager.java
           echo 'package cn.nukkit.plugin; public class PluginLogger { public void info(String m){} }' > s/cn/nukkit/plugin/PluginLogger.java
-          echo 'package cn.nukkit; import cn.nukkit.level.Level; import cn.nukkit.level.generator.Generator; import cn.nukkit.plugin.PluginManager; import java.util.*; public class Server { public PluginManager getPluginManager(){return null;} public String getDataPath(){return "";} public boolean isLevelLoaded(String n){return false;} public boolean loadLevel(String n){return true;} public Map<Integer,Level> getLevels(){return null;} public boolean isLevelGenerated(String n){return false;} public boolean generateLevel(String n,long s,Class<? extends Generator> g,Map<String,Object> o){return true;} public Level getLevelByName(String n){return null;} }' > s/cn/nukkit/Server.java
-          echo 'package cn.nukkit.plugin; import cn.nukkit.Server; import cn.nukkit.command.*; public abstract class PluginBase { public void onEnable(){} public boolean onCommand(CommandSender s,Command c,String l,String[] a){return false;} public Server getServer(){return null;} public PluginLogger getLogger(){return null;} }' > s/cn/nukkit/plugin/PluginBase.java
+          echo 'package cn.nukkit.scheduler; import cn.nukkit.plugin.Plugin; public class ServerScheduler { public void scheduleDelayedTask(Plugin p,Runnable r,int d){} }' > s/cn/nukkit/scheduler/ServerScheduler.java
+          echo 'package cn.nukkit.plugin; public interface Plugin {}' > s/cn/nukkit/plugin/Plugin.java
+          echo 'package cn.nukkit; import cn.nukkit.level.Level; import cn.nukkit.level.generator.Generator; import cn.nukkit.plugin.PluginManager; import cn.nukkit.scheduler.ServerScheduler; import java.util.*; public class Server { public PluginManager getPluginManager(){return null;} public String getDataPath(){return "";} public boolean isLevelLoaded(String n){return false;} public boolean loadLevel(String n){return true;} public Map<Integer,Level> getLevels(){return null;} public boolean isLevelGenerated(String n){return false;} public boolean generateLevel(String n,long s,Class<? extends Generator> g,Map<String,Object> o){return true;} public Level getLevelByName(String n){return null;} public ServerScheduler getScheduler(){return null;} }' > s/cn/nukkit/Server.java
+          echo 'package cn.nukkit.plugin; import cn.nukkit.Server; import cn.nukkit.command.*; public abstract class PluginBase implements Plugin { public void onEnable(){} public boolean onCommand(CommandSender s,Command c,String l,String[] a){return false;} public Server getServer(){return null;} public PluginLogger getLogger(){return null;} }' > s/cn/nukkit/plugin/PluginBase.java
           javac -d build/s $(find s -name "*.java")
           javac -cp build/s -d build/c src/main/java/ru/plextime/core/Main.java
           cp src/main/resources/plugin.yml build/c/
