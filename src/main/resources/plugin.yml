@@ -1,0 +1,12 @@
+name: NewPlugin
+main: ru.plextime.core.Main
+version: 1.0.0
+api: ["1.0.0", "1.0.14", "2.0.0"]
+author: PlexTime
+commands:
+  mw:
+    description: Управление мирами (UI)
+    permission: plextime.owner
+permissions:
+  plextime.owner:
+    default: op
