@@ -18,9 +18,8 @@
         <dependency>
             <groupId>com.koshakmine</groupId>
             <artifactId>Lumi</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lumi.jar</systemPath>
+            <version>1.6.10-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
