@@ -5,207 +5,49 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - name: Set up JDK 21
-        uses: actions/setup-java@v5
+      - uses: actions/setup-java@v5
         with:
           java-version: '21'
           distribution: 'temurin'
-      - name: Build Lumi JAR
-        run: |
-          mkdir -p stub/cn/nukkit/block stub/cn/nukkit/command stub/cn/nukkit/event stub/cn/nukkit/event/player stub/cn/nukkit/form/element stub/cn/nukkit/form/response stub/cn/nukkit/form/window stub/cn/nukkit/level stub/cn/nukkit/level/generator stub/cn/nukkit/math stub/cn/nukkit/plugin
-          cat << 'EOF' > stub/cn/nukkit/math/Vector3.java
-          package cn.nukkit.math;
-          public class Vector3 { public double x,y,z; public Vector3(double x,double y,double z){this.x=x;this.y=y;this.z=z;} }
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/level/Position.java
-          package cn.nukkit.level;
-          import cn.nukkit.math.Vector3;
-          public class Position extends Vector3 { public Position(){super(0,0,0);} }
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/level/Location.java
-          package cn.nukkit.level;
-          public class Location extends Position {}
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/block/BlockID.java
-          package cn.nukkit.block;
-          public interface BlockID { int BEDROCK = 7; }
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/block/Block.java
-          package cn.nukkit.block;
-          public class Block implements BlockID { public static Block get(int id){return new Block();} }
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/level/generator/Generator.java
-          package cn.nukkit.level.generator;
-          public abstract class Generator {}
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/level/generator/Flat.java
-          package cn.nukkit.level.generator;
-          public class Flat extends Generator {}
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/level/generator/Normal.java
-          package cn.nukkit.level.generator;
-          public class Normal extends Generator {}
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/level/generator/Nether.java
-          package cn.nukkit.level.generator;
-          public class Nether extends Generator {}
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/level/Level.java
-          package cn.nukkit.level;
-          import cn.nukkit.block.Block;
-          import cn.nukkit.math.Vector3;
-          public class Level {
-            public String getFolderName(){return "";}
-            public void setSpawnLocation(Vector3 v){}
-            public void setBlock(Vector3 v, Block b){}
-            public Position getSafeSpawn(){return new Position();}
-          }
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/Player.java
-          package cn.nukkit;
-          import cn.nukkit.form.window.FormWindow;
-          import cn.nukkit.level.*;
-          public class Player extends Location {
-            public boolean hasPermission(String p){return true;}
-            public boolean isOp(){return true;}
-            public void sendMessage(String m){}
-            public int showFormWindow(FormWindow f, int id){return id;}
-            public Level getLevel(){return new Level();}
-            public Position getPosition(){return this;}
-            public boolean teleport(Position p){return true;}
-            public double getY(){return y;}
-          }
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/command/Command.java
-          package cn.nukkit.command;
-          public class Command { public String getName(){return "";} }
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/command/CommandSender.java
-          package cn.nukkit.command;
-          public interface CommandSender { void sendMessage(String m); }
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/event/Listener.java
-          package cn.nukkit.event;
-          public interface Listener {}
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/event/EventHandler.java
-          package cn.nukkit.event;
-          import java.lang.annotation.*;
-          @Retention(RetentionPolicy.RUNTIME) @Target(ElementType.METHOD)
-          public @interface EventHandler {}
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/form/element/Element.java
-          package cn.nukkit.form.element;
-          public abstract class Element {}
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/form/element/ElementButton.java
-          package cn.nukkit.form.element;
-          public class ElementButton { public ElementButton(String t){} public String getText(){return "";} }
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/form/element/ElementDropdown.java
-          package cn.nukkit.form.element;
-          import java.util.List;
-          public class ElementDropdown extends Element { public ElementDropdown(String t, List<String> o){} }
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/form/element/ElementInput.java
-          package cn.nukkit.form.element;
-          public class ElementInput extends Element { public ElementInput(String t, String p){} }
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/form/response/FormResponse.java
-          package cn.nukkit.form.response;
-          public abstract class FormResponse {}
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/form/response/FormResponseSimple.java
-          package cn.nukkit.form.response;
-          import cn.nukkit.form.element.ElementButton;
-          public class FormResponseSimple extends FormResponse {
-            public int getClickedButtonId(){return 0;}
-            public ElementButton getClickedButton(){return new ElementButton("");}
-          }
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/form/response/FormResponseCustom.java
-          package cn.nukkit.form.response;
-          public class FormResponseCustom extends FormResponse {
-            public String getInputResponse(int i){return "";}
-            public FormResponseData getDropdownResponse(int i){return new FormResponseData();}
-          }
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/form/response/FormResponseData.java
-          package cn.nukkit.form.response;
-          public class FormResponseData { public int getElementID(){return 0;} }
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/form/window/FormWindow.java
-          package cn.nukkit.form.window;
-          public abstract class FormWindow {}
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/form/window/FormWindowSimple.java
-          package cn.nukkit.form.window;
-          import cn.nukkit.form.element.ElementButton;
-          public class FormWindowSimple extends FormWindow {
-            public FormWindowSimple(String t, String c){}
-            public void addButton(ElementButton b){}
-          }
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/form/window/FormWindowCustom.java
-          package cn.nukkit.form.window;
-          import cn.nukkit.form.element.Element;
-          public class FormWindowCustom extends FormWindow {
-            public FormWindowCustom(String t){}
-            public void addElement(Element e){}
-          }
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/event/player/PlayerFormRespondedEvent.java
-          package cn.nukkit.event.player;
-          import cn.nukkit.Player;
-          import cn.nukkit.form.response.FormResponse;
-          public class PlayerFormRespondedEvent {
-            public boolean wasClosed(){return false;}
-            public FormResponse getResponse(){return null;}
-            public Player getPlayer(){return null;}
-            public int getFormID(){return 0;}
-          }
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/event/player/PlayerMoveEvent.java
-          package cn.nukkit.event.player;
-          import cn.nukkit.Player;
-          public class PlayerMoveEvent { public Player getPlayer(){return null;} }
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/plugin/PluginManager.java
-          package cn.nukkit.plugin;
-          import cn.nukkit.event.Listener;
-          public class PluginManager { public void registerEvents(Listener l, PluginBase p){} }
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/plugin/PluginLogger.java
-          package cn.nukkit.plugin;
-          public class PluginLogger { public void info(String m){} }
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/Server.java
-          package cn.nukkit;
-          import cn.nukkit.level.Level;
-          import cn.nukkit.level.generator.Generator;
-          import cn.nukkit.plugin.PluginManager;
-          import java.util.*;
-          public class Server {
-            public PluginManager getPluginManager(){return new PluginManager();}
-            public String getDataPath(){return "";}
-            public boolean isLevelLoaded(String n){return false;}
-            public boolean loadLevel(String n){return true;}
-            public Map<Integer,Level> getLevels(){return new HashMap<>();}
-            public boolean isLevelGenerated(String n){return false;}
-            public boolean generateLevel(String n, long s, Class<? extends Generator> g, Map<String,Object> o){return true;}
-            public Level getLevelByName(String n){return null;}
-          }
-          EOF
-          cat << 'EOF' > stub/cn/nukkit/plugin/PluginBase.java
-          package cn.nukkit.plugin;
-          import cn.nukkit.Server;
-          import cn.nukkit.command.*;
-          public abstract class PluginBase {
-            public void onEnable(){}
-            public boolean onCommand(CommandSender s, Command c, String l, String[] a){return false;}
-            public Server getServer(){return new Server();}
-            public PluginLogger getLogger(){return new PluginLogger();}
-          }
-          EOF
-          mkdir -p build/stub build/classes target
-          javac -d build/stub $(find stub -name "*.java")
+      - run: |
+          mkdir -p s/cn/nukkit/{block,command,event/player,form/{element,response,window},level/generator,math,plugin} build/{s,c} target
+          echo 'package cn.nukkit.math; public class Vector3 { public double x,y,z; public Vector3(double x,double y,double z){} }' > s/cn/nukkit/math/Vector3.java
+          echo 'package cn.nukkit.level; import cn.nukkit.math.Vector3; public class Position extends Vector3 { public Position(){super(0,0,0);} }' > s/cn/nukkit/level/Position.java
+          echo 'package cn.nukkit.level; public class Location extends Position {}' > s/cn/nukkit/level/Location.java
+          echo 'package cn.nukkit.block; public interface BlockID { int BEDROCK = 7; }' > s/cn/nukkit/block/BlockID.java
+          echo 'package cn.nukkit.block; public class Block implements BlockID { public static Block get(int i){return null;} }' > s/cn/nukkit/block/Block.java
+          echo 'package cn.nukkit.level.generator; public abstract class Generator {}' > s/cn/nukkit/level/generator/Generator.java
+          echo 'package cn.nukkit.level.generator; public class Flat extends Generator {}' > s/cn/nukkit/level/generator/Flat.java
+          echo 'package cn.nukkit.level.generator; public class Normal extends Generator {}' > s/cn/nukkit/level/generator/Normal.java
+          echo 'package cn.nukkit.level.generator; public class Nether extends Generator {}' > s/cn/nukkit/level/generator/Nether.java
+          echo 'package cn.nukkit.level; import cn.nukkit.block.Block; import cn.nukkit.math.Vector3; public class Level { public String getFolderName(){return "";} public void setSpawnLocation(Vector3 v){} public void setBlock(Vector3 v,Block b){} public Position getSafeSpawn(){return null;} }' > s/cn/nukkit/level/Level.java
+          echo 'package cn.nukkit; import cn.nukkit.form.window.FormWindow; import cn.nukkit.level.*; public class Player extends Location { public boolean hasPermission(String p){return true;} public boolean isOp(){return true;} public void sendMessage(String m){} public int showFormWindow(FormWindow f,int i){return 0;} public Level getLevel(){return null;} public Position getPosition(){return null;} public boolean teleport(Position p){return true;} public double getY(){return 0;} }' > s/cn/nukkit/Player.java
+          echo 'package cn.nukkit.command; public class Command { public String getName(){return "";} }' > s/cn/nukkit/command/Command.java
+          echo 'package cn.nukkit.command; public interface CommandSender { void sendMessage(String m); }' > s/cn/nukkit/command/CommandSender.java
+          echo 'package cn.nukkit.event; public interface Listener {}' > s/cn/nukkit/event/Listener.java
+          echo 'package cn.nukkit.event; import java.lang.annotation.*; @Retention(RetentionPolicy.RUNTIME) @Target(ElementType.METHOD) public @interface EventHandler {}' > s/cn/nukkit/event/EventHandler.java
+          echo 'package cn.nukkit.form.element; public abstract class Element {}' > s/cn/nukkit/form/element/Element.java
+          echo 'package cn.nukkit.form.element; public class ElementButton { public ElementButton(String t){} public String getText(){return "";} }' > s/cn/nukkit/form/element/ElementButton.java
+          echo 'package cn.nukkit.form.element; import java.util.List; public class ElementDropdown extends Element { public ElementDropdown(String t,List<String> o){} }' > s/cn/nukkit/form/element/ElementDropdown.java
+          echo 'package cn.nukkit.form.element; public class ElementInput extends Element { public ElementInput(String t,String p){} }' > s/cn/nukkit/form/element/ElementInput.java
+          echo 'package cn.nukkit.form.response; public abstract class FormResponse {}' > s/cn/nukkit/form/response/FormResponse.java
+          echo 'package cn.nukkit.form.response; import cn.nukkit.form.element.ElementButton; public class FormResponseSimple extends FormResponse { public int getClickedButtonId(){return 0;} public ElementButton getClickedButton(){return null;} }' > s/cn/nukkit/form/response/FormResponseSimple.java
+          echo 'package cn.nukkit.form.response; public class FormResponseCustom extends FormResponse { public String getInputResponse(int i){return "";} public FormResponseData getDropdownResponse(int i){return null;} }' > s/cn/nukkit/form/response/FormResponseCustom.java
+          echo 'package cn.nukkit.form.response; public class FormResponseData { public int getElementID(){return 0;} }' > s/cn/nukkit/form/response/FormResponseData.java
+          echo 'package cn.nukkit.form.window; public abstract class FormWindow {}' > s/cn/nukkit/form/window/FormWindow.java
+          echo 'package cn.nukkit.form.window; import cn.nukkit.form.element.ElementButton; public class FormWindowSimple extends FormWindow { public FormWindowSimple(String t,String c){} public void addButton(ElementButton b){} }' > s/cn/nukkit/form/window/FormWindowSimple.java
+          echo 'package cn.nukkit.form.window; import cn.nukkit.form.element.Element; public class FormWindowCustom extends FormWindow { public FormWindowCustom(String t){} public void addElement(Element e){} }' > s/cn/nukkit/form/window/FormWindowCustom.java
+          echo 'package cn.nukkit.event.player; import cn.nukkit.Player; import cn.nukkit.form.response.FormResponse; public class PlayerFormRespondedEvent { public boolean wasClosed(){return false;} public FormResponse getResponse(){return null;} public Player getPlayer(){return null;} public int getFormID(){return 0;} }' > s/cn/nukkit/event/player/PlayerFormRespondedEvent.java
+          echo 'package cn.nukkit.event.player; import cn.nukkit.Player; public class PlayerMoveEvent { public Player getPlayer(){return null;} }' > s/cn/nukkit/event/player/PlayerMoveEvent.java
+          echo 'package cn.nukkit.plugin; import cn.nukkit.event.Listener; public class PluginManager { public void registerEvents(Listener l,PluginBase p){} }' > s/cn/nukkit/plugin/PluginManager.java
+          echo 'package cn.nukkit.plugin; public class PluginLogger { public void info(String m){} }' > s/cn/nukkit/plugin/PluginLogger.java
+          echo 'package cn.nukkit; import cn.nukkit.level.Level; import cn.nukkit.level.generator.Generator; import cn.nukkit.plugin.PluginManager; import java.util.*; public class Server { public PluginManager getPluginManager(){return null;} public String getDataPath(){return "";} public boolean isLevelLoaded(String n){return false;} public boolean loadLevel(String n){return true;} public Map<Integer,Level> getLevels(){return null;} public boolean isLevelGenerated(String n){return false;} public boolean generateLevel(String n,long s,Class<? extends Generator> g,Map<String,Object> o){return true;} public Level getLevelByName(String n){return null;} }' > s/cn/nukkit/Server.java
+          echo 'package cn.nukkit.plugin; import cn.nukkit.Server; import cn.nukkit.command.*; public abstract class PluginBase { public void onEnable(){} public boolean onCommand(CommandSender s,Command c,String l,String[] a){return false;} public Server getServer(){return null;} public PluginLogger getLogger(){return null;} }' > s/cn/nukkit/plugin/PluginBase.java
+          javac -d build/s $(find s -name "*.java")
+          javac -cp build/s -d build/c src/main/java/ru/plextime/core/Main.java
+          cp src/main/resources/plugin.yml build/c/
+          jar cf target/NewPlugin.jar -C build/c .
+      - uses: actions/upload-artifact@v5
+        with:
+          name: NewPlugin
+          path: target/NewPlugin.jar
